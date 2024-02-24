@@ -1,10 +1,29 @@
 const fetchData = async (id) => {
     const response = await fetch(`https://openapi.programming-hero.com/api/videos/category/${id}`)
     const data = await response.json()
+
+    // Convert views to numeric values for proper sorting
+    data.data.forEach(item => {
+        item.others.views = parseFloat(item.others.views.slice(0, -1));
+    });
+
     if (data.data.length == 0) {
         noContent()
+
     }
-    else { dataBind(data.data); }
+    else {
+        document.getElementById('short-by-view').addEventListener('click', e => {
+            // Sort the data array by views in descending order
+            data.data.sort((a, b) => b.others.views - a.others.views);
+
+            // Now 'data' array is sorted by most views
+            // console.log(data);
+
+            dataBind(data.data);
+            return;
+        })
+        dataBind(data.data);
+    }
 }
 
 
@@ -74,7 +93,7 @@ const dataBind = videos => {
 
                             <div class="card-body-bottom">
                                 <h6 class="user-name">${video.authors[0].profile_name} ${video.authors[0].verified ? '<i class="fa-solid fa-circle-check verify" style="color: #74C0FC;"></i>' : ''}</h6>
-                                <h6 class="views"> ${video.others.views} views</h6>
+                                <h6 class="views"> ${video.others.views}k views</h6>
                             </div>
 
                         </div>
